@@ -3,6 +3,10 @@
 Risk-based REST API tests for `https://compassuol.serverest.dev/`, implemented with
 Playwright Test's API request support.
 
+## AI agent used
+
+The AI agent of choice was GitHub Copilot in VS Code. It assisted with drafting API scenarios, implementing and refactoring Playwright tests, debugging failures, reviewing coverage gaps, and preparing documentation. Suggestions were checked against the live ServeRest Swagger and API behavior, with unsupported assumptions corrected by human review.
+
 ## Scope
 
 The suite covers authentication, users, products and carts, including positive,
