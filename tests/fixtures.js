@@ -28,6 +28,7 @@ const test = base.extend({
 
         const { _id: id } = body
         expect(id, 'the created user ID').toEqual(expect.any(String))
+        expect(id.length, 'the created user ID length').toBeGreaterThan(0)
         const user = { ...userData, id }
         users.set(id, user)
 
@@ -43,6 +44,7 @@ const test = base.extend({
 
         const { authorization } = await responseBody(response)
         expect(authorization, 'the login authorization value').toEqual(expect.any(String))
+        expect(authorization.length, 'the login authorization value length').toBeGreaterThan(0)
         user.token = authorization
         return user
       },
@@ -61,6 +63,7 @@ const test = base.extend({
 
         const { _id: id } = body
         expect(id, 'the created product ID').toEqual(expect.any(String))
+        expect(id.length, 'the created product ID length').toBeGreaterThan(0)
         products.set(id, { admin, id })
         return { ...productData, id }
       },

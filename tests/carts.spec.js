@@ -87,7 +87,7 @@ test.describe('Carts - /carrinhos', () => {
     const product = await testData.createProduct(admin, { quantidade: 4 })
 
     const response = await testData.createCart(user, [
-      { idProduto: 'nonexistent-product-id', quantidade: 1 }
+      { idProduto: makeUnknownId('product'), quantidade: 1 }
     ])
     expect(response.status()).toBe(400)
 

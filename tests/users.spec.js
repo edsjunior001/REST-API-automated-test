@@ -1,5 +1,5 @@
 const { expect, responseBody, test } = require('./fixtures')
-const { makeUnknownId } = require('../src/test-data')
+const { makeUniqueEmail, makeUnknownId, makeUser } = require('../src/test-data')
 
 test.describe('Users - /usuarios', () => {
   test('lists users and filters by a unique email', async ({ api, testData }) => {
@@ -25,7 +25,7 @@ test.describe('Users - /usuarios', () => {
   test('returns 200 and an empty collection for a filter with no matches', async ({ api }) => {
     const response = await api.request(
       'GET',
-      `/usuarios?email=${encodeURIComponent(`missing.${Date.now()}@example.com`)}`
+      `/usuarios?email=${encodeURIComponent(makeUniqueEmail('missing'))}`
     )
 
     expect(response.status()).toBe(200)
@@ -89,12 +89,11 @@ test.describe('Users - /usuarios', () => {
 
   test('updates an existing user and persists the changed fields', async ({ api, testData }) => {
     const user = await testData.createUser({ admin: false })
-    const updated = {
+    const updated = makeUser({
+      admin: true,
       nome: `Updated ${user.nome}`,
-      email: `updated.${Date.now()}@example.com`,
-      password: user.password,
-      administrador: 'true'
-    }
+      password: user.password
+    })
 
     const updateResponse = await api.request('PUT', `/usuarios/${user.id}`, {
       data: updated
@@ -113,12 +112,7 @@ test.describe('Users - /usuarios', () => {
 
   test('creates a user when PUT targets a previously unknown ID', async ({ api, testData }) => {
     const id = makeUnknownId('put-user')
-    const user = {
-      nome: 'PUT-created QA user',
-      email: `put.${Date.now()}@example.com`,
-      password: 'Valid-password-123!',
-      administrador: 'false'
-    }
+    const user = makeUser({ nome: 'PUT-created QA user' })
 
     const response = await api.request('PUT', `/usuarios/${id}`, { data: user })
     const created = await responseBody(response)

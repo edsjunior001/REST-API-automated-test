@@ -1,11 +1,15 @@
 const { randomUUID } = require('node:crypto')
 
+function makeUniqueEmail(prefix = 'qa') {
+  return `${prefix}.${randomUUID()}@example.com`
+}
+
 function makeUser({ admin = false, ...overrides } = {}) {
   const uniqueId = randomUUID()
 
   return {
     nome: `QA User ${uniqueId.slice(0, 8)}`,
-    email: `qa.${uniqueId}@example.com`,
+    email: makeUniqueEmail(),
     password: `Qa-${uniqueId}-Pass!`,
     administrador: String(admin),
     ...overrides
@@ -29,4 +33,4 @@ function makeUnknownId(prefix = 'missing') {
   return `${firstCharacter}${randomUUID().replaceAll('-', '').slice(0, 15)}`
 }
 
-module.exports = { makeProduct, makeUnknownId, makeUser }
+module.exports = { makeProduct, makeUniqueEmail, makeUnknownId, makeUser }

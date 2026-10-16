@@ -22,7 +22,7 @@ test.describe('Products - /produtos', () => {
 
     const noMatchResponse = await api.request(
       'GET',
-      `/produtos?nome=${encodeURIComponent(`missing-${Date.now()}`)}`
+      `/produtos?nome=${encodeURIComponent(`missing-${makeUnknownId('product')}`)}`
     )
     expect(noMatchResponse.status()).toBe(200)
     expect(await responseBody(noMatchResponse)).toMatchObject({
@@ -62,7 +62,7 @@ test.describe('Products - /produtos', () => {
   test('rejects product creation without a token or with a standard-user token', async ({ api, testData }) => {
     const user = await testData.createUser({ admin: false })
     const productData = {
-      nome: `Unauthorized ${Date.now()}`,
+      nome: `Unauthorized-${makeUnknownId('product')}`,
       preco: 100,
       descricao: 'Authorization negative case',
       quantidade: 1
@@ -85,6 +85,12 @@ test.describe('Products - /produtos', () => {
     })
     expect(invalidTokenResponse.status()).toBe(401)
 
+    const malformedTokenResponse = await api.request('POST', '/produtos', {
+      data: { ...productData, nome: `${productData.nome} malformed` },
+      token: 'Bearer'
+    })
+    expect(malformedTokenResponse.status()).toBe(401)
+
     const lookup = await api.request(
       'GET',
       `/produtos?nome=${encodeURIComponent(productData.nome)}`
@@ -98,7 +104,7 @@ test.describe('Products - /produtos', () => {
     const user = await testData.createUser({ admin: false })
     const product = await testData.createProduct(admin)
     const updated = {
-      nome: `Unauthorized update ${Date.now()}`,
+      nome: `Unauthorized update ${makeUnknownId('product')}`,
       preco: product.preco,
       descricao: product.descricao,
       quantidade: product.quantidade
@@ -151,9 +157,9 @@ test.describe('Products - /produtos', () => {
   test('rejects zero/negative prices and negative stock quantities', async ({ api, testData }) => {
     const admin = await testData.createUser({ admin: true })
     const invalidProducts = [
-      makeProduct({ nome: `QA zero price ${Date.now()}`, preco: 0 }),
-      makeProduct({ nome: `QA negative price ${Date.now()}`, preco: -1 }),
-      makeProduct({ nome: `QA negative stock ${Date.now()}`, quantidade: -1 })
+      makeProduct({ preco: 0 }),
+      makeProduct({ preco: -1 }),
+      makeProduct({ quantidade: -1 })
     ]
 
     for (const product of invalidProducts) {
@@ -212,7 +218,7 @@ test.describe('Products - /produtos', () => {
     const admin = await testData.createUser({ admin: true })
     const id = makeUnknownId('put-product')
     const product = {
-      nome: `PUT-created ${Date.now()}`,
+      nome: `PUT-created ${makeUnknownId('product')}`,
       preco: 180,
       descricao: 'Created through documented PUT behavior',
       quantidade: 7

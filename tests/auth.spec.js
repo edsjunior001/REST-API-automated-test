@@ -1,4 +1,5 @@
 const { expect, responseBody, test } = require('./fixtures')
+const { makeUniqueEmail } = require('../src/test-data')
 
 test.describe('Authentication - POST /login', () => {
   test('authenticates a registered user and returns a usable token', async ({ api, testData }) => {
@@ -12,6 +13,7 @@ test.describe('Authentication - POST /login', () => {
     const body = await responseBody(response)
     expect(body.message).toBeTruthy()
     expect(body.authorization).toEqual(expect.any(String))
+    expect(body.authorization.length).toBeGreaterThan(0)
 
     const protectedResponse = await api.request('POST', '/produtos', {
       data: {
@@ -41,7 +43,7 @@ test.describe('Authentication - POST /login', () => {
   test('rejects an unknown email', async ({ api }) => {
     const response = await api.request('POST', '/login', {
       data: {
-        email: `missing.${Date.now()}@example.com`,
+        email: makeUniqueEmail('missing'),
         password: 'irrelevant-password'
       }
     })
